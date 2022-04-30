@@ -22,7 +22,6 @@ def main():
     screen.fill(pg.Color("white"))
     gs = ChessEngine.GameState()
     validMoves = gs.getValidMoves() # get the valid move into list 
-    print(len(validMoves))
     moveMade = False # flag variable for when a move is made
     loadImages()
     running = True
