@@ -41,6 +41,10 @@ class GameState():
         elif move.pieceMoved == 'bK':
             self.whiteKingLocation = (move.endRow, move.endCol)
 
+        # phong cấp cho tốt
+        if move.isPawnPromotion:
+            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + 'Q'
+
     def undoMove(self):
         if len(self.moveLog) != 0:
             move = self.moveLog.pop()
@@ -188,7 +192,7 @@ class GameState():
             if r-1 >= 0 and self.board[r-1][c] == "--":
                 if not piecePinned or pinDirection == (-1, 0):
                     moves.append(Move((r, c), (r-1,c), self.board))
-                    if r-2 >= 0 and self.board[r-2][c] == "--":
+                    if r== 6 and r-2 >= 0 and self.board[r-2][c] == "--":
                         moves.append(Move((r, c), (r-2, c), self.board))
             # ăn quân địch
             if r-1 >= 0 and c-1 >= 0 and self.board[r-1][c-1][0] == 'b':
@@ -202,7 +206,7 @@ class GameState():
             if r+1 < 8 and self.board[r+1][c] == "--":
                 if not piecePinned or pinDirection == (1, 0):
                     moves.append(Move((r, c), (r+1,c), self.board))
-                    if r+2 < 8 and self.board[r+2][c] == "--":
+                    if r ==1 and r+2 < 8 and self.board[r+2][c] == "--":
                         moves.append(Move((r, c), (r+2, c), self.board))
 
             if r+1 < 8 and c-1 >= 0 and self.board[r+1][c-1][0] == 'w':
@@ -252,7 +256,7 @@ class GameState():
                 break
         knightMoves = ((-2, -1), (-2, 1), (-1, -2), (-1, 2),
                         (1, -2),  (1, 2), (2, -1), (2, 1))
-        enemyColor = 'b' if self.whiteToMove else 'w'
+        enemyColor = 'w' if self.whiteToMove else 'b'
         for move in knightMoves:
             endRow = r + move[0]
             endCol = c + move[1]
@@ -335,7 +339,12 @@ class Move():
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
         self.moveID = self.startRow * 1000 + self.startCol*100 + self.endRow*10 + self.endCol
-    
+        self.isPawnPromotion = False
+        self.promotionChoice = 'Q'
+        if (self.pieceMoved == 'wp' and self.endRow == 0) or (self.pieceMoved == 'bp' and self.endRow == 7): 
+            self.isPawnPromotion = True
+
+        self.inEnpassantMove = False
     # Overriding the equals method
     
     def __eq__(self, other):
